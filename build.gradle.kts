@@ -23,10 +23,20 @@ repositories {
 extra["springCloudVersion"] = "2023.0.3"
 
 dependencies {
+    // base config
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    // spring cloud
     implementation("org.springframework.cloud:spring-cloud-starter-config")
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway-mvc")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
+    implementation("org.springframework.cloud:spring-cloud-starter-bus-amqp")
+
+    // monitor
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

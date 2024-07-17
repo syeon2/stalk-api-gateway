@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: prod
+
+encrypt:
+  key: ${ENCRYPT_PASSWORD}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  cloud:
+    config:
+      uri: http://stalk-config:8888
+      name: api-gateway
