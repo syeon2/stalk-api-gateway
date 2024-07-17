@@ -1,0 +1,21 @@
+- hosts: stalk-api-gateway
+  become: true
+
+  tasks:
+    - name: stop the cloud api gateway container
+      command: docker stop stalk-api-gateway
+      ignore_errors: yes
+
+    - name: remove the cloud api gateway container
+      command: docker rm stalk-api-gateway
+      ignore_errors: yes
+
+    - name: remove the cloud api gateway docker image
+      command: docker rmi waterkite94/stalk-api-gateway
+      ignore_errors: yes
+
+    - name: pull the cloud api gateway image from docker hub
+      command: docker pull waterkite94/stalk-api-gateway
+
+    - name: execute cloud api gateway container
+      command: docker run -d -p 8000:8000 --name stalk-api-gateway --network stalk-network waterkite94/stalk-api-gateway

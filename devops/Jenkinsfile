@@ -1,0 +1,103 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'waterkite94/stalk-api-gateway'
+        DOCKERFILE_PATH = './devops/Dockerfile'
+    }
+
+    stages {
+        stage('Git Clone') {
+            steps {
+                git branch: 'main', credentialsId: 'github_webhook_token',
+                url: 'https://github.com/syeon2/stalk-api-gateway.git'
+            }
+        }
+
+        stage('Build Project') {
+            steps {
+                sh "./gradlew clean build"
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def dockerfilePath = "${env.WORKSPACE}/${DOCKERFILE_PATH}"
+                    def buildArgs = "--build-arg ENCRYPT_PASSWORD=${env.ENCRYPT_PASSWORD}"
+
+                    sh "docker build -f ${dockerfilePath} -t ${DOCKER_IMAGE} ${buildArgs} ${env.WORKSPACE}"
+                }
+            }
+        }
+
+        stage('Publish Image to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker_hub_access_token') {
+                        sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+
+        stage('Transfer ansible file & Execute ansible file') {
+            steps {
+                sshPublisher(
+                    publishers: [
+                        sshPublisherDesc(
+                            configName: 'stalk-ansible',
+                            transfers: [
+                                sshTransfer(
+                                    cleanRemote: false,
+                                    excludes: '',
+                                    execCommand: '',
+                                    execTimeout: 120000,
+                                    flatten: false,
+                                    makeEmptyDirs: false,
+                                    noDefaultExcludes: false,
+                                    patternSeparator: '[, ]+',
+                                    remoteDirectory: './playbooks',
+                                    remoteDirectorySDF: false,
+                                    removePrefix: 'devops',
+                                    sourceFiles: 'devops/ansible-stalk-api-gateway.yml'
+                                ),
+                                sshTransfer(
+                                    cleanRemote: false,
+                                    excludes: '',
+                                    execCommand: 'ansible-playbook playbooks/ansible-stalk-api-gateway.yml',
+                                    execTimeout: 120000,
+                                    flatten: false,
+                                    makeEmptyDirs: false,
+                                    noDefaultExcludes: false,
+                                    patternSeparator: '[, ]+',
+                                    remoteDirectory: '.',
+                                    remoteDirectorySDF: false,
+                                    removePrefix: '',
+                                    sourceFiles: ''
+                                )
+                            ],
+                            usePromotionTimestamp: false,
+                            useWorkspaceInPromotion: false,
+                            verbose: false
+                        )
+                    ]
+                )
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+
+        failure {
+            echo 'The build has failed.'
+        }
+
+        success {
+            echo 'The build has succeeded.'
+        }
+    }
+}
