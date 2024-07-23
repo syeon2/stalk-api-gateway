@@ -29,7 +29,7 @@ spring:
     username: local
     password: local
 
-  cloud:
+  cloud: # prod - cloud config
     gateway:
       routes:
         - id: member-service
@@ -45,6 +45,15 @@ spring:
           uri: lb://MEMBER-SERVICE
           predicates:
             - Path=/member-service/api/v1/member/verification-email/**
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+
+        - id: member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=/member-service/api/v1/member/**
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie
