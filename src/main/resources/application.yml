@@ -59,6 +59,15 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
 
+        #--------------------- activity service ---------------------#
+        - id: activity-service
+          uri: lb://ACTIVITY-SERVICE
+          predicates:
+            - Path=/activity-service/api/v1/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/activity-service/(?<segment>.*), /$\{segment}
+
 eureka:
   client:
     fetch-registry: true
