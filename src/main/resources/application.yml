@@ -58,6 +58,7 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
 
         - id: member-service
           uri: lb://MEMBER-SERVICE
@@ -76,6 +77,9 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/activity-service/(?<segment>.*), /$\{segment}
+
+token:
+  secret: 11f2c4ea9ce0048fe62caf57c5c907e694c87bf046425232bb5617b2536a49283f21883905e80ca0f232a36cca3fffdd4a079439207179304d4de089b86e8665
 
 eureka:
   client:
