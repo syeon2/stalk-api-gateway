@@ -59,7 +59,16 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
 
-        #--------------------- activity service ---------------------#
+        - id: member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=/member-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+
+            #--------------------- activity service ---------------------#
         - id: activity-service
           uri: lb://ACTIVITY-SERVICE
           predicates:
