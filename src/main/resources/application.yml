@@ -53,21 +53,20 @@ spring:
         - id: member-service
           uri: lb://MEMBER-SERVICE
           predicates:
-            - Path=/member-service/api/v1/member/**
-            - Method=POST
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
-            - AuthorizationHeaderFilter
-
-        - id: member-service
-          uri: lb://MEMBER-SERVICE
-          predicates:
             - Path=/member-service/login
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+
+        - id: member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=/member-service/api/v1/member/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
 
             #--------------------- activity service ---------------------#
         - id: activity-service
