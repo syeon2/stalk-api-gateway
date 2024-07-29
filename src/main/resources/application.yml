@@ -60,6 +60,13 @@ spring:
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter
 
+        - id: member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=/member-service/api/v1/follow/**
+            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
+
             #--------------------- activity service ---------------------#
         - id: activity-service
           uri: lb://ACTIVITY-SERVICE
