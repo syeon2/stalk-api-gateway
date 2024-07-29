@@ -64,6 +64,8 @@ spring:
           uri: lb://MEMBER-SERVICE
           predicates:
             - Path=/member-service/api/v1/follow/**
+          filters:
+            - RemoveRequestHeader=Cookie
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter
 
